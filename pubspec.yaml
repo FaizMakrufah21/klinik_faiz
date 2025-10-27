@@ -1,0 +1,38 @@
+name: my_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Tambahkan ini 👇 untuk menampilkan file SVG (misal dari unDraw)
+  flutter_svg: ^2.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Daftarkan folder aset kamu di sini
+  assets:
+    - lib/assets/image/
+    - lib/assets/fonts/
+
+  # Daftarkan font kamu di sini
+  fonts:
+    - family: Tahoma
+      fonts:
+        - asset: lib/assets/fonts/Tahoma.ttf
+        - asset: lib/assets/fonts/Tahoma.ttf
+          weight: 700
