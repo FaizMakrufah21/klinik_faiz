@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import '../model/pegawai.dart';
-import 'pegawai_update_form.dart';
+import '../model/dokter.dart';
+import 'dokter_update_form.dart';
 
-class PegawaiDetail extends StatefulWidget {
-  final Pegawai pegawai;
+class DokterDetail extends StatefulWidget {
+  final Dokter dokter;
   final int index;
 
-  const PegawaiDetail({super.key, required this.pegawai, required this.index});
+  const DokterDetail({super.key, required this.dokter, required this.index});
 
   @override
-  State<PegawaiDetail> createState() => _PegawaiDetailState();
+  State<DokterDetail> createState() => _DokterDetailState();
 }
 
-class _PegawaiDetailState extends State<PegawaiDetail> {
+class _DokterDetailState extends State<DokterDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Detail Pegawai"),
+        title: const Text("Detail Dokter"),
         backgroundColor: Colors.green,
       ),
       body: Column(
@@ -29,10 +29,22 @@ class _PegawaiDetailState extends State<PegawaiDetail> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Nama: ${widget.pegawai.nama}", style: const TextStyle(fontSize: 18)),
-                Text("NIP: ${widget.pegawai.nip}", style: const TextStyle(fontSize: 18)),
-                Text("Tanggal Lahir: ${widget.pegawai.tanggalLahir}", style: const TextStyle(fontSize: 18)),
-                Text("Nomor Telepon: ${widget.pegawai.nomorTelepon}", style: const TextStyle(fontSize: 18)),
+                Text(
+                  "Nama: ${widget.dokter.nama}",
+                  style: const TextStyle(fontSize: 18),
+                ),
+                Text(
+                  "NIP: ${widget.dokter.nip}",
+                  style: const TextStyle(fontSize: 18),
+                ),
+                Text(
+                  "Spesialis: ${widget.dokter.spesialis}",
+                  style: const TextStyle(fontSize: 18),
+                ),
+                Text(
+                  "Nomor Telepon: ${widget.dokter.nomorTelepon}",
+                  style: const TextStyle(fontSize: 18),
+                ),
               ],
             ),
           ),
@@ -46,7 +58,8 @@ class _PegawaiDetailState extends State<PegawaiDetail> {
                   final hasilUbah = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PegawaiUpdateForm(pegawai: widget.pegawai),
+                      builder: (context) =>
+                          DokterUpdateForm(dokter: widget.dokter),
                     ),
                   );
                   // ignore: use_build_context_synchronously
@@ -61,7 +74,9 @@ class _PegawaiDetailState extends State<PegawaiDetail> {
                     content: const Text("Yakin ingin menghapus data ini?"),
                     actions: [
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
                         onPressed: () {
                           Navigator.pop(context);
                           Navigator.pop(context, 'hapus');
@@ -69,13 +84,18 @@ class _PegawaiDetailState extends State<PegawaiDetail> {
                         child: const Text("YA"),
                       ),
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
                         onPressed: () => Navigator.pop(context),
                         child: const Text("Tidak"),
                       ),
                     ],
                   );
-                  showDialog(context: context, builder: (context) => alertDialog);
+                  showDialog(
+                    context: context,
+                    builder: (context) => alertDialog,
+                  );
                 },
                 child: const Text("Hapus"),
               ),

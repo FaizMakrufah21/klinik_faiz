@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
-import '../model/pasien.dart';
+import '../model/dokter.dart';
 
-class PasienUpdateForm extends StatefulWidget {
-  final Pasien pasien;
-  const PasienUpdateForm({super.key, required this.pasien});
+class DokterUpdateForm extends StatefulWidget {
+  final Dokter dokter;
+  const DokterUpdateForm({super.key, required this.dokter});
 
   @override
-  State<PasienUpdateForm> createState() => _PasienUpdateFormState();
+  State<DokterUpdateForm> createState() => _DokterUpdateFormState();
 }
 
-class _PasienUpdateFormState extends State<PasienUpdateForm> {
+class _DokterUpdateFormState extends State<DokterUpdateForm> {
   final _formKey = GlobalKey<FormState>();
   final _namaCtrl = TextEditingController();
-  final _nikCtrl = TextEditingController();
-  final _alamatCtrl = TextEditingController();
+  final _nipCtrl = TextEditingController();
+  final _spesialisCtrl = TextEditingController();
   final _telpCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _namaCtrl.text = widget.pasien.nama;
-    _nikCtrl.text = widget.pasien.nik;
-    _alamatCtrl.text = widget.pasien.alamat;
-    _telpCtrl.text = widget.pasien.nomorTelepon;
+    _namaCtrl.text = widget.dokter.nama;
+    _nipCtrl.text = widget.dokter.nip;
+    _spesialisCtrl.text = widget.dokter.spesialis;
+    _telpCtrl.text = widget.dokter.nomorTelepon;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Ubah Data Pasien"),
+        title: const Text("Ubah Data Dokter"),
         backgroundColor: Colors.green,
       ),
       body: SingleChildScrollView(
@@ -38,8 +38,8 @@ class _PasienUpdateFormState extends State<PasienUpdateForm> {
           child: Column(
             children: [
               _fieldNama(),
-              _fieldNIK(),
-              _fieldAlamat(),
+              _fieldNIP(),
+              _fieldSpesialis(),
               _fieldTelepon(),
               const SizedBox(height: 20),
               _tombolSimpan(),
@@ -54,28 +54,28 @@ class _PasienUpdateFormState extends State<PasienUpdateForm> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
-        decoration: const InputDecoration(labelText: "Nama Pasien"),
+        decoration: const InputDecoration(labelText: "Nama Dokter"),
         controller: _namaCtrl,
       ),
     );
   }
 
-  Padding _fieldNIK() {
+  Padding _fieldNIP() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
-        decoration: const InputDecoration(labelText: "NIK"),
-        controller: _nikCtrl,
+        decoration: const InputDecoration(labelText: "NIP"),
+        controller: _nipCtrl,
       ),
     );
   }
 
-  Padding _fieldAlamat() {
+  Padding _fieldSpesialis() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
-        decoration: const InputDecoration(labelText: "Alamat"),
-        controller: _alamatCtrl,
+        decoration: const InputDecoration(labelText: "Spesialis"),
+        controller: _spesialisCtrl,
       ),
     );
   }
@@ -94,13 +94,13 @@ class _PasienUpdateFormState extends State<PasienUpdateForm> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
       onPressed: () {
-        final pasienBaru = Pasien(
+        final dokterBaru = Dokter(
           nama: _namaCtrl.text,
-          nik: _nikCtrl.text,
-          alamat: _alamatCtrl.text,
+          nip: _nipCtrl.text,
+          spesialis: _spesialisCtrl.text,
           nomorTelepon: _telpCtrl.text,
         );
-        Navigator.pop(context, pasienBaru);
+        Navigator.pop(context, dokterBaru);
       },
       child: const Text("Simpan Perubahan"),
     );

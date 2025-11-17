@@ -38,6 +38,7 @@ class _PoliDetailState extends State<PoliDetail> {
                     ),
                   );
                   if (hasilUbah != null) {
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context, hasilUbah);
                   }
                 },

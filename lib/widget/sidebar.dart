@@ -3,7 +3,8 @@ import '../ui/beranda.dart';
 import '../ui/poli_page.dart';
 import '../ui/pegawai_page.dart';
 import '../ui/pasien_page.dart';
-import '../ui/logout.dart'; // 🔥 tambahkan ini
+import '../ui/dokter_page.dart'; // 🩺 tambahkan ini
+import '../ui/logout.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});
@@ -21,9 +22,7 @@ class Sidebar extends StatelessWidget {
               backgroundColor: Colors.white,
               child: Icon(Icons.person, size: 40, color: Color(0xff060b0f)),
             ),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 0, 140, 255),
-            ),
+            decoration: BoxDecoration(color: Color.fromARGB(255, 0, 140, 255)),
           ),
           ListTile(
             leading: const Icon(Icons.home),
@@ -65,13 +64,20 @@ class Sidebar extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.medical_services),
+            title: const Text("Dokter"), // 🩺 menu baru
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DokterPage()),
+              );
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text(
-              "Keluar",
-              style: TextStyle(color: Colors.red),
-            ),
+            title: const Text("Keluar", style: TextStyle(color: Colors.red)),
             onTap: () {
               Navigator.push(
                 context,

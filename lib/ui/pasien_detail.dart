@@ -49,6 +49,7 @@ class _PasienDetailState extends State<PasienDetail> {
                       builder: (context) => PasienUpdateForm(pasien: widget.pasien),
                     ),
                   );
+                  // ignore: use_build_context_synchronously
                   if (hasilUbah != null) Navigator.pop(context, hasilUbah);
                 },
                 child: const Text("Ubah"),
