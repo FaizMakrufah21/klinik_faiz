@@ -1,108 +1,84 @@
 import 'package:flutter/material.dart';
 import '../model/pasien.dart';
+import '../service/pasien_service.dart';
+import 'pasien_detail.dart';
 
 class PasienUpdateForm extends StatefulWidget {
   final Pasien pasien;
-  const PasienUpdateForm({super.key, required this.pasien});
+
+  const PasienUpdateForm({Key? key, required this.pasien}) : super(key: key);
 
   @override
   State<PasienUpdateForm> createState() => _PasienUpdateFormState();
 }
 
 class _PasienUpdateFormState extends State<PasienUpdateForm> {
-  final _formKey = GlobalKey<FormState>();
+  final _nomorRmCtrl = TextEditingController();
   final _namaCtrl = TextEditingController();
-  final _nikCtrl = TextEditingController();
+  final _tanggalLahirCtrl = TextEditingController();
+  final _nomorTeleponCtrl = TextEditingController();
   final _alamatCtrl = TextEditingController();
-  final _telpCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _nomorRmCtrl.text = widget.pasien.nomorRm;
     _namaCtrl.text = widget.pasien.nama;
-    _nikCtrl.text = widget.pasien.nik;
+    _tanggalLahirCtrl.text = widget.pasien.tanggalLahir;
+    _nomorTeleponCtrl.text = widget.pasien.nomorTelepon;
     _alamatCtrl.text = widget.pasien.alamat;
-    _telpCtrl.text = widget.pasien.nomorTelepon;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Ubah Data Pasien"),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: const Text("Ubah Pasien")),
       body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _fieldNama(),
-              _fieldNIK(),
-              _fieldAlamat(),
-              _fieldTelepon(),
-              const SizedBox(height: 20),
-              _tombolSimpan(),
-            ],
-          ),
+        child: Column(
+          children: [
+            _field(_nomorRmCtrl, "Nomor RM"),
+            _field(_namaCtrl, "Nama Pasien"),
+            _field(_tanggalLahirCtrl, "Tanggal Lahir"),
+            _field(_nomorTeleponCtrl, "Nomor Telepon"),
+            _field(_alamatCtrl, "Alamat"),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                Pasien pasien = Pasien(
+                  id: widget.pasien.id,
+                  nomorRm: _nomorRmCtrl.text,
+                  nama: _namaCtrl.text,
+                  tanggalLahir: _tanggalLahirCtrl.text,
+                  nomorTelepon: _nomorTeleponCtrl.text,
+                  alamat: _alamatCtrl.text,
+                );
+
+                await PasienService()
+                    .ubah(pasien, widget.pasien.id.toString())
+                    .then((value) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PasienDetail(pasien: value),
+                        ),
+                      );
+                    });
+              },
+              child: const Text("Simpan Perubahan"),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Padding _fieldNama() {
+  Widget _field(TextEditingController ctrl, String label) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: TextField(
-        decoration: const InputDecoration(labelText: "Nama Pasien"),
-        controller: _namaCtrl,
+        controller: ctrl,
+        decoration: InputDecoration(labelText: label),
       ),
-    );
-  }
-
-  Padding _fieldNIK() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        decoration: const InputDecoration(labelText: "NIK"),
-        controller: _nikCtrl,
-      ),
-    );
-  }
-
-  Padding _fieldAlamat() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        decoration: const InputDecoration(labelText: "Alamat"),
-        controller: _alamatCtrl,
-      ),
-    );
-  }
-
-  Padding _fieldTelepon() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        decoration: const InputDecoration(labelText: "Nomor Telepon"),
-        controller: _telpCtrl,
-      ),
-    );
-  }
-
-  ElevatedButton _tombolSimpan() {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-      onPressed: () {
-        final pasienBaru = Pasien(
-          nama: _namaCtrl.text,
-          nik: _nikCtrl.text,
-          alamat: _alamatCtrl.text,
-          nomorTelepon: _telpCtrl.text,
-        );
-        Navigator.pop(context, pasienBaru);
-      },
-      child: const Text("Simpan Perubahan"),
     );
   }
 }

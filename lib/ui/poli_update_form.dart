@@ -1,64 +1,70 @@
 import 'package:flutter/material.dart';
 import '../model/poli.dart';
+import '../service/poli_service.dart';
+import 'poli_detail.dart';
 
 class PoliUpdateForm extends StatefulWidget {
   final Poli poli;
-  const PoliUpdateForm({super.key, required this.poli});
+
+  const PoliUpdateForm({Key? key, required this.poli}) : super(key: key);
 
   @override
-  State<PoliUpdateForm> createState() => _PoliUpdateFormState();
+  _PoliUpdateFormState createState() => _PoliUpdateFormState();
 }
 
 class _PoliUpdateFormState extends State<PoliUpdateForm> {
   final _formKey = GlobalKey<FormState>();
   final _namaPoliCtrl = TextEditingController();
 
+  Future<Poli> getData() async {
+    Poli data = await PoliService().getById(widget.poli.id.toString());
+    setState(() {
+      _namaPoliCtrl.text = data.namaPoli;
+    });
+    return data;
+  }
+
   @override
   void initState() {
     super.initState();
-    _namaPoliCtrl.text = widget.poli.namaPoli;
+    getData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Ubah Poli"),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: const Text("Ubah Poli")),
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
-            children: [
-              _fieldNamaPoli(),
-              const SizedBox(height: 20),
-              _tombolSimpan(),
-            ],
+            children: [_fieldNamaPoli(), SizedBox(height: 20), _tombolSimpan()],
           ),
         ),
       ),
     );
   }
 
-  Padding _fieldNamaPoli() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        decoration: const InputDecoration(labelText: "Nama Poli"),
-        controller: _namaPoliCtrl,
-      ),
+  Widget _fieldNamaPoli() {
+    return TextField(
+      decoration: const InputDecoration(labelText: "Nama Poli"),
+      controller: _namaPoliCtrl,
     );
   }
 
-  ElevatedButton _tombolSimpan() {
+  Widget _tombolSimpan() {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-      onPressed: () {
-        if (_namaPoliCtrl.text.isNotEmpty) {
-          final poliBaru = Poli(namaPoli: _namaPoliCtrl.text);
-          Navigator.pop(context, poliBaru);
-        }
+      onPressed: () async {
+        Poli poli = Poli(namaPoli: _namaPoliCtrl.text);
+        String id = widget.poli.id.toString();
+
+        await PoliService().ubah(poli, id).then((value) {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => PoliDetail(poli: value)),
+          );
+        });
       },
       child: const Text("Simpan Perubahan"),
     );

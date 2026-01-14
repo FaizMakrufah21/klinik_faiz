@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/pasien.dart';
+import '../service/pasien_service.dart';
+import 'pasien_detail.dart';
 
 class PasienForm extends StatefulWidget {
   const PasienForm({super.key});
@@ -9,11 +11,11 @@ class PasienForm extends StatefulWidget {
 }
 
 class _PasienFormState extends State<PasienForm> {
-  final _formKey = GlobalKey<FormState>();
+  final _nomorRmCtrl = TextEditingController();
   final _namaCtrl = TextEditingController();
-  final _nikCtrl = TextEditingController();
+  final _tanggalLahirCtrl = TextEditingController();
+  final _nomorTeleponCtrl = TextEditingController();
   final _alamatCtrl = TextEditingController();
-  final _telpCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,81 +25,48 @@ class _PasienFormState extends State<PasienForm> {
         backgroundColor: Colors.green,
       ),
       body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _fieldNama(),
-              _fieldNIK(),
-              _fieldAlamat(),
-              _fieldTelepon(),
-              const SizedBox(height: 20),
-              _tombolSimpan(),
-            ],
-          ),
+        child: Column(
+          children: [
+            _field(_nomorRmCtrl, "Nomor RM"),
+            _field(_namaCtrl, "Nama Pasien"),
+            _field(_tanggalLahirCtrl, "Tanggal Lahir"),
+            _field(_nomorTeleponCtrl, "Nomor Telepon"),
+            _field(_alamatCtrl, "Alamat"),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                Pasien pasien = Pasien(
+                  nomorRm: _nomorRmCtrl.text,
+                  nama: _namaCtrl.text,
+                  tanggalLahir: _tanggalLahirCtrl.text,
+                  nomorTelepon: _nomorTeleponCtrl.text,
+                  alamat: _alamatCtrl.text,
+                );
+
+                await PasienService().simpan(pasien).then((value) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PasienDetail(pasien: value),
+                    ),
+                  );
+                });
+              },
+              child: const Text("Simpan"),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Padding _fieldNama() {
+  Widget _field(TextEditingController ctrl, String label) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: TextField(
-        decoration: const InputDecoration(labelText: "Nama Pasien"),
-        controller: _namaCtrl,
+        controller: ctrl,
+        decoration: InputDecoration(labelText: label),
       ),
-    );
-  }
-
-  Padding _fieldNIK() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        decoration: const InputDecoration(labelText: "NIK"),
-        controller: _nikCtrl,
-      ),
-    );
-  }
-
-  Padding _fieldAlamat() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        decoration: const InputDecoration(labelText: "Alamat"),
-        controller: _alamatCtrl,
-      ),
-    );
-  }
-
-  Padding _fieldTelepon() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        decoration: const InputDecoration(labelText: "Nomor Telepon"),
-        controller: _telpCtrl,
-      ),
-    );
-  }
-
-  ElevatedButton _tombolSimpan() {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-      onPressed: () {
-        if (_namaCtrl.text.isNotEmpty &&
-            _nikCtrl.text.isNotEmpty &&
-            _alamatCtrl.text.isNotEmpty &&
-            _telpCtrl.text.isNotEmpty) {
-          final pasien = Pasien(
-            nama: _namaCtrl.text,
-            nik: _nikCtrl.text,
-            alamat: _alamatCtrl.text,
-            nomorTelepon: _telpCtrl.text,
-          );
-          Navigator.pop(context, pasien);
-        }
-      },
-      child: const Text("Simpan"),
     );
   }
 }

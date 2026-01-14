@@ -87,85 +87,79 @@ class _LoginState extends State<Login> {
   }
 
   Widget _tombolLogin(BuildContext context) {
-  return Container(
-    width: MediaQuery.of(context).size.width,
-    child: ElevatedButton(
-      child: Text("Login"),
-      onPressed: () async {
-        String username = _usernameCtrl.text;
-        String password = _passwordCtrl.text;
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: ElevatedButton(
+        child: const Text("Login"),
+        onPressed: () async {
+          String username = _usernameCtrl.text;
+          String password = _passwordCtrl.text;
 
-        await LoginService().login(username, password).then((value) {
-          if (value == true) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Beranda(),
-              ),
-            );
-          } else {
-            AlertDialog alertDialog = AlertDialog(
-              content: const Text("Username atau Password Tidak Valid"),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("OK"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+          await LoginService().login(username, password).then((value) {
+            if (value == true) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const Beranda()),
+              );
+            } else {
+              AlertDialog alertDialog = AlertDialog(
+                content: const Text("Username atau Password Tidak Valid"),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("OK"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
                   ),
-                )
-              ],
-            );
+                ],
+              );
 
-            showDialog(
-              context: context,
-              builder: (context) => alertDialog,
-            );
-          }
-        });
-      },
-    ),
-  );
-}
+              showDialog(context: context, builder: (context) => alertDialog);
+            }
+          });
+        },
+      ),
+    );
+  }
 
-
-//   Widget _tombolLogin(BuildContext context) {
-//     return SizedBox(
-//       width: double.infinity,
-//       child: ElevatedButton(
-//         style: ElevatedButton.styleFrom(
-//           backgroundColor: Colors.red,
-//           padding: const EdgeInsets.symmetric(vertical: 14),
-//         ),
-//         onPressed: () {
-//           if (_formKey.currentState!.validate()) {
-//             // ✅ Contoh login sederhana
-//             if (_usernameCtrl.text == "admin" &&
-//                 _passwordCtrl.text == "12345") {
-//               // pindah ke halaman Beranda
-//               Navigator.pushReplacement(
-//                 context,
-//                 MaterialPageRoute(builder: (context) => const Beranda()),
-//               );
-//             } else {
-//               // tampilkan pesan error
-//               ScaffoldMessenger.of(context).showSnackBar(
-//                 const SnackBar(
-//                   content: Text("Username atau Password salah!"),
-//                   backgroundColor: Colors.red,
-//                 ),
-//               );
-//             }
-//           }
-//         },
-//         child: const Text(
-//           "Login",
-//           style: TextStyle(fontSize: 18, color: Colors.white),
-//         ),
-//       ),
-//     );
-//   }
-// }
+  //   Widget _tombolLogin(BuildContext context) {
+  //     return SizedBox(
+  //       width: double.infinity,
+  //       child: ElevatedButton(
+  //         style: ElevatedButton.styleFrom(
+  //           backgroundColor: Colors.red,
+  //           padding: const EdgeInsets.symmetric(vertical: 14),
+  //         ),
+  //         onPressed: () {
+  //           if (_formKey.currentState!.validate()) {
+  //             // ✅ Contoh login sederhana
+  //             if (_usernameCtrl.text == "admin" &&
+  //                 _passwordCtrl.text == "12345") {
+  //               // pindah ke halaman Beranda
+  //               Navigator.pushReplacement(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => const Beranda()),
+  //               );
+  //             } else {
+  //               // tampilkan pesan error
+  //               ScaffoldMessenger.of(context).showSnackBar(
+  //                 const SnackBar(
+  //                   content: Text("Username atau Password salah!"),
+  //                   backgroundColor: Colors.red,
+  //                 ),
+  //               );
+  //             }
+  //           }
+  //         },
+  //         child: const Text(
+  //           "Login",
+  //           style: TextStyle(fontSize: 18, color: Colors.white),
+  //         ),
+  //       ),
+  //     );
+  //   }
+  // }
 }

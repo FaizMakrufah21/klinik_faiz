@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/poli.dart';
+import '../service/poli_service.dart';
 import 'poli_item.dart';
 import 'poli_form.dart';
 import 'poli_detail.dart';
@@ -7,40 +8,15 @@ import '../widget/sidebar.dart';
 
 class PoliPage extends StatefulWidget {
   const PoliPage({super.key});
+
   @override
   State<PoliPage> createState() => _PoliPageState();
 }
 
 class _PoliPageState extends State<PoliPage> {
-  // Daftar awal data poli
-  List<Poli> poliList = [
-    Poli(namaPoli: "Poli Anak"),
-    Poli(namaPoli: "Poli Kaungan"),
-    Poli(namaPoli: "Poli Gigi"),
-    Poli(namaPoli: "Poli THT"),
-    Poli(namaPoli: "Poli jantung  "),
-    Poli(namaPoli: "Poli bandeng"),
-    Poli(namaPoli: "Poli mata"),
-  ];
-  // Tambah data poli
-  void _tambahPoli(Poli poli) {
-    setState(() {
-      poliList.add(poli);
-    });
-  }
-
-  // Ubah data poli
-  void _ubahPoli(int index, Poli poliBaru) {
-    setState(() {
-      poliList[index] = poliBaru;
-    });
-  }
-
-  // Hapus data poli
-  void _hapusPoli(int index) {
-    setState(() {
-      poliList.removeAt(index);
-    });
+  Stream<List<Poli>> getList() async* {
+    List<Poli> data = await PoliService().listData();
+    yield data;
   }
 
   @override
@@ -49,7 +25,7 @@ class _PoliPageState extends State<PoliPage> {
       drawer: const Sidebar(),
       appBar: AppBar(
         title: const Text("Data Poli Faiz Makrufah [02]"),
-        backgroundColor: Colors.green, // 🔴 AppBar merah
+        backgroundColor: Colors.green,
         actions: [
           GestureDetector(
             child: const Padding(
@@ -57,39 +33,47 @@ class _PoliPageState extends State<PoliPage> {
               child: Icon(Icons.add),
             ),
             onTap: () async {
-              final Poli? newPoli = await Navigator.push(
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const PoliForm()),
               );
-              if (newPoli != null) {
-                _tambahPoli(newPoli);
-              }
+              setState(() {});
             },
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: poliList.length,
-        itemBuilder: (context, index) {
-          final poli = poliList[index];
-          return PoliItem(
-            poli: poli,
-            onTap: () async {
-              final hasil = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PoliDetail(
-                    poli: poli,
-                    index: index,
-                  ),
-                ),
-              );
+      body: StreamBuilder<List<Poli>>(
+        stream: getList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
 
-              if (hasil is Poli) {
-                _ubahPoli(index, hasil);
-              } else if (hasil == 'hapus') {
-                _hapusPoli(index);
-              }
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Data Poli Kosong"));
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final poli = snapshot.data![index];
+              return PoliItem(
+                poli: poli,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PoliDetail(poli: poli),
+                    ),
+                  ).then((_) {
+                    setState(() {});
+                  });
+                },
+              );
             },
           );
         },
@@ -97,3 +81,87 @@ class _PoliPageState extends State<PoliPage> {
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import '../model/poli.dart';
+// import '../service/poli_service.dart';
+// import 'poli_item.dart';
+// import 'poli_form.dart';
+// import 'poli_detail.dart';
+// import '../widget/sidebar.dart';
+
+// class PoliPage extends StatefulWidget {
+//   const PoliPage({super.key});
+
+//   @override
+//   State<PoliPage> createState() => _PoliPageState();
+// }
+
+// class _PoliPageState extends State<PoliPage> {
+//   Stream<List<Poli>> getList() async* {
+//     List<Poli> data = await PoliService().listData();
+//     yield data;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       drawer: const Sidebar(),
+//       appBar: AppBar(
+//         title: const Text("Data Poli Faiz Makrufah [02]"),
+//         backgroundColor: Colors.green,
+//         actions: [
+//           GestureDetector(
+//             child: const Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 12.0),
+//               child: Icon(Icons.add),
+//             ),
+//             onTap: () async {
+//               await Navigator.push(
+//                 context,
+//                 MaterialPageRoute(builder: (context) => const PoliForm()),
+//               );
+//               setState(() {});
+//             },
+//           ),
+//         ],
+//       ),
+//       body: StreamBuilder<List<Poli>>(
+//         stream: getList(),
+//         builder: (context, snapshot) {
+//           if (snapshot.hasError) {
+//             return Text(snapshot.error.toString());
+//           }
+
+//           if (snapshot.connectionState != ConnectionState.done) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+
+//           if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//             return const Center(child: Text("Data Poli Kosong"));
+//           }
+
+//           return ListView.builder(
+//             itemCount: snapshot.data!.length,
+//             itemBuilder: (context, index) {
+//               final poli = snapshot.data![index];
+//               return PoliItem(
+//                 poli: poli,
+//                 onTap: () {
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute(
+//                       builder: (context) => PoliDetail(poli: poli, index: index),
+//                     ),
+//                   ).then((_) {
+//                     setState(() {});
+//                   });
+//                 },
+//               );
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

@@ -15,7 +15,7 @@ class PasienItem extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: ListTile(
           title: Text(pasien.nama),
-          subtitle: Text("NIK: ${pasien.nik}"),
+          subtitle: Text("Nomor RM: ${pasien.nomorRm}"),
         ),
       ),
     );

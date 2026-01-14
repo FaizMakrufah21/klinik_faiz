@@ -20,9 +20,9 @@ class UserInfo {
     return pref.setString(USER_ID, value);
   }
 
-  Future<String> getUserID() async {
+  Future<String?> getUserID() async {
     final pref = await SharedPreferences.getInstance();
-    return pref.getString(USER_ID).toString();
+    return pref.getString(USER_ID);
   }
 
   Future setUsername(String value) async {
@@ -30,9 +30,9 @@ class UserInfo {
     return pref.setString(USERNAME, value);
   }
 
-  Future<String> getUsername() async {
+  Future<String?> getUsername() async {
     final pref = await SharedPreferences.getInstance();
-    return pref.getString(USERNAME).toString();
+    return pref.getString(USERNAME);
   }
 
   Future<void> logout() async {

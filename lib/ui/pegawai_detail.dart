@@ -1,88 +1,84 @@
 import 'package:flutter/material.dart';
 import '../model/pegawai.dart';
+import '../service/pegawai_service.dart';
+import 'pegawai_page.dart';
 import 'pegawai_update_form.dart';
 
 class PegawaiDetail extends StatefulWidget {
   final Pegawai pegawai;
-  final int index;
 
-  const PegawaiDetail({super.key, required this.pegawai, required this.index});
+  const PegawaiDetail({Key? key, required this.pegawai}) : super(key: key);
 
   @override
   State<PegawaiDetail> createState() => _PegawaiDetailState();
 }
 
 class _PegawaiDetailState extends State<PegawaiDetail> {
+  Stream<Pegawai> getData() async* {
+    Pegawai data = await PegawaiService().getById(widget.pegawai.id.toString());
+    yield data;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Detail Pegawai"),
-        backgroundColor: Colors.green,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Nama: ${widget.pegawai.nama}", style: const TextStyle(fontSize: 18)),
-                Text("NIP: ${widget.pegawai.nip}", style: const TextStyle(fontSize: 18)),
-                Text("Tanggal Lahir: ${widget.pegawai.tanggalLahir}", style: const TextStyle(fontSize: 18)),
-                Text("Nomor Telepon: ${widget.pegawai.nomorTelepon}", style: const TextStyle(fontSize: 18)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      appBar: AppBar(title: const Text("Detail Pegawai")),
+      body: StreamBuilder(
+        stream: getData(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.hasError) return Text(snapshot.error.toString());
+
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Column(
             children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                onPressed: () async {
-                  final hasilUbah = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PegawaiUpdateForm(pegawai: widget.pegawai),
-                    ),
-                  );
-                  // ignore: use_build_context_synchronously
-                  if (hasilUbah != null) Navigator.pop(context, hasilUbah);
-                },
-                child: const Text("Ubah"),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () {
-                  AlertDialog alertDialog = AlertDialog(
-                    content: const Text("Yakin ingin menghapus data ini?"),
-                    actions: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context, 'hapus');
-                        },
-                        child: const Text("YA"),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("Tidak"),
-                      ),
-                    ],
-                  );
-                  showDialog(context: context, builder: (context) => alertDialog);
-                },
-                child: const Text("Hapus"),
+              const SizedBox(height: 20),
+              Text("NIP : ${snapshot.data.nip}"),
+              Text("Nama : ${snapshot.data.nama}"),
+              Text("Tanggal Lahir : ${snapshot.data.tanggalLahir}"),
+              Text("No Telp : ${snapshot.data.nomorTelepon}"),
+              Text("Email : ${snapshot.data.email}"),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [_tombolUbah(), _tombolHapus()],
               ),
             ],
-          ),
-        ],
+          );
+        },
       ),
+    );
+  }
+
+  _tombolUbah() {
+    return StreamBuilder(
+      stream: getData(),
+      builder: (context, AsyncSnapshot snapshot) => ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PegawaiUpdateForm(pegawai: snapshot.data),
+            ),
+          );
+        },
+        child: const Text("Ubah"),
+      ),
+    );
+  }
+
+  _tombolHapus() {
+    return ElevatedButton(
+      onPressed: () async {
+        await PegawaiService().hapus(widget.pegawai);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => PegawaiPage()),
+        );
+      },
+      child: const Text("Hapus"),
     );
   }
 }

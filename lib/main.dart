@@ -11,11 +11,10 @@ Future<void> main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: token == null ? Login() : Beranda(),
+      home: token == null ? const Login() : const Beranda(),
     ),
   );
 }
-
 
 // import 'package:flutter/material.dart';
 // import '/ui/login.dart'; // pastikan path sesuai dengan struktur project kamu

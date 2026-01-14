@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../model/pasien.dart';
-import '../widget/sidebar.dart';
-import 'pasien_item.dart';
+import '../service/pasien_service.dart';
 import 'pasien_form.dart';
 import 'pasien_detail.dart';
+import 'pasien_item.dart';
+import '../widget/sidebar.dart';
 
 class PasienPage extends StatefulWidget {
   const PasienPage({super.key});
@@ -13,21 +14,12 @@ class PasienPage extends StatefulWidget {
 }
 
 class _PasienPageState extends State<PasienPage> {
-  List<Pasien> pasienList = [
-    Pasien(nama: "m. Hasan", nik: "3271011001010001", alamat: "Jl. Merdeka No.10", nomorTelepon: "0812345678"),
-    Pasien(nama: "Suci Permata", nik: "3271012002020002", alamat: "Jl. Melati No.5", nomorTelepon: "0898765432"),
-  ];
+  late Future<List<Pasien>> futurePasien;
 
-  void _tambahPasien(Pasien pasien) {
-    setState(() => pasienList.add(pasien));
-  }
-
-  void _ubahPasien(int index, Pasien pasienBaru) {
-    setState(() => pasienList[index] = pasienBaru);
-  }
-
-  void _hapusPasien(int index) {
-    setState(() => pasienList.removeAt(index));
+  @override
+  void initState() {
+    super.initState();
+    futurePasien = PasienService().listData();
   }
 
   @override
@@ -35,43 +27,57 @@ class _PasienPageState extends State<PasienPage> {
     return Scaffold(
       drawer: const Sidebar(),
       appBar: AppBar(
-        title: const Text("Data Pasien Faiz Makrufah [02]"),
+        title: const Text("Data Pasien"),
         backgroundColor: Colors.green,
         actions: [
-          GestureDetector(
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.add),
-            ),
-            onTap: () async {
-              final Pasien? result = await Navigator.push(
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const PasienForm()),
+                MaterialPageRoute(builder: (_) => const PasienForm()),
               );
-              if (result != null) _tambahPasien(result);
+              setState(() {
+                futurePasien = PasienService().listData();
+              });
             },
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: pasienList.length,
-        itemBuilder: (context, index) {
-          final pasien = pasienList[index];
-          return PasienItem(
-            pasien: pasien,
-            onTap: () async {
-              final hasil = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PasienDetail(pasien: pasien, index: index),
-                ),
-              );
+      body: FutureBuilder<List<Pasien>>(
+        future: futurePasien,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              if (hasil is Pasien) {
-                _ubahPasien(index, hasil);
-              } else if (hasil == 'hapus') {
-                _hapusPasien(index);
-              }
+          if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Data Pasien Kosong"));
+          }
+
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final pasien = snapshot.data![index];
+              return PasienItem(
+                pasien: pasien,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PasienDetail(pasien: pasien),
+                    ),
+                  ).then((_) {
+                    setState(() {
+                      futurePasien = PasienService().listData();
+                    });
+                  });
+                },
+              );
             },
           );
         },
